@@ -57,5 +57,5 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.settings.target }}
-        path: target/release/sso-profiles
+        path: target/${{ matrix.settings.target }}/release/sso-profiles
         retention-days: 7
