@@ -52,6 +52,7 @@ jobs:
     
     - run: rustup target add ${{ matrix.settings.target }}
     - run: cargo build --release --target ${{ matrix.settings.target }}
+    - run: find target -type f
 
     - uses: actions/upload-artifact@v3
       with:
