@@ -11,12 +11,48 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    steps:
+    
+    - uses: actions/checkout@v3
+    
+    # - name: Build
+    #   run: cargo build --verbose
+    #
+    # - name: Run tests
+    #   run: cargo test --verbose
+
+  cross:
+    
+    strategy:
+      matrix:
+        settings:
+          - host: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - host: macos-latest
+            target: x86_64-apple-darwin
+          - host: macos-latest
+            target: aarch64-apple-darwin
+          - host: windows-latest
+            target: x86_64-pc-windows-msvc
+    
+    runs-on: ${{ matrix.settings.host }}
 
     steps:
+    
     - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+    
+    - name: Install rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: ${{ matrix.settings.target }}
+    
+    - name: Install rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        profile: minimal
+        override: true
+        target: ${{ matrix.settings.target }}
+    
+    - run: cargo build --release --target ${{ matrix.settings.target }}

@@ -31,7 +31,7 @@ async fn main() -> Result<(), anyhow::Error> {
     let args = Args::parse();
 
     let merger = AwsConfigMerger {
-        prefix: args.prefix.clone().unwrap_or(String::from("")),
+        prefix: args.prefix.clone().unwrap_or_else(|| String::from("")),
         clean: args.clean,
     };
 
@@ -39,7 +39,7 @@ async fn main() -> Result<(), anyhow::Error> {
 
     if args.populate {
         // Try to locate the AWS config file
-        let aws_config_path = get_aws_config_path().ok_or(anyhow!("Cannot resolve AWS config file path"))?;
+        let aws_config_path = get_aws_config_path().ok_or_else(|| anyhow!("Cannot resolve AWS config file path"))?;
 
         // Load the AWS Config file
         if aws_config_path.exists() {

@@ -51,7 +51,7 @@ impl SSOProfilesLister {
         
         let sso_profiles = self.list_sso_profiles(&sdk_config, access_token.as_str()).await?;
         
-        return Ok(sso_profiles);
+        Ok(sso_profiles)
     }
 
     /// Handles AWS SSO's Device Code Flow, returning an access token result.
@@ -68,10 +68,10 @@ impl SSOProfilesLister {
 
         let client_id = register
             .client_id()
-            .ok_or(anyhow!("SSO Client Registration provided no client id"))?;
+            .ok_or_else(|| anyhow!("SSO Client Registration provided no client id"))?;
         let client_secret = register
             .client_secret()
-            .ok_or(anyhow!("SSO Client Registration provided no client secret"))?;
+            .ok_or_else(|| anyhow!("SSO Client Registration provided no client secret"))?;
 
         let device_authorization = sso_client_oidc
             .start_device_authorization()
@@ -83,13 +83,13 @@ impl SSOProfilesLister {
 
         let verification_uri = device_authorization
             .verification_uri_complete()
-            .ok_or(anyhow!(
+            .ok_or_else(|| anyhow!(
                 "SSO Device Authorization provided no verification URL"
             ))?;
 
         let device_code = device_authorization
             .device_code()
-            .ok_or(anyhow!("SSO Device Authroization provided no device code"))?;
+            .ok_or_else(|| anyhow!("SSO Device Authroization provided no device code"))?;
 
         match open::that(verification_uri) {
             _ => {
@@ -124,7 +124,7 @@ impl SSOProfilesLister {
 
         let access_token = token_output
             .access_token()
-            .ok_or(anyhow!("Token output provided no access token"))?;
+            .ok_or_else(|| anyhow!("Token output provided no access token"))?;
 
         Ok(String::from(access_token))
     }
@@ -147,10 +147,10 @@ impl SSOProfilesLister {
             let account = account?;
             let account_id = account
                 .account_id()
-                .ok_or(anyhow!("Account id is missing"))?;
+                .ok_or_else(|| anyhow!("Account id is missing"))?;
             let account_name = account
                 .account_name()
-                .ok_or(anyhow!("Account is missing its name"))?;
+                .ok_or_else(|| anyhow!("Account is missing its name"))?;
 
             let mut list_roles = sso_client
                 .list_account_roles()
@@ -162,11 +162,11 @@ impl SSOProfilesLister {
             while let Some(list_roles) = list_roles.next().await {
                 for role in list_roles?
                     .role_list()
-                    .ok_or(anyhow!("Role list not available"))?
+                    .ok_or_else(|| anyhow!("Role list not available"))?
                 {
                     let role_name = role
                         .role_name()
-                        .ok_or(anyhow!("Role does not have a name"))?;
+                        .ok_or_else(|| anyhow!("Role does not have a name"))?;
                     
                     sso_profiles.push(SSOProfile {
                         account_id: String::from(account_id),
@@ -207,7 +207,7 @@ impl AwsConfigMerger {
         }
         
         for sso_profile in sso_profiles {
-            let bare_profile_name = format!("{}-{}", sso_profile.account_name.replace(" ", "-"), &sso_profile.role_name);
+            let bare_profile_name = format!("{}-{}", sso_profile.account_name.replace(' ', "-"), &sso_profile.role_name);
             let profile_name = self.prefix_name(&bare_profile_name);
             let section_name = self.section_name(&profile_name);
             
