@@ -33,12 +33,16 @@ jobs:
         settings:
           - host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+            artifact: target/x86_64-unknown-linux-gnu/release/sso-profiles
           - host: macos-latest
             target: x86_64-apple-darwin
+            artifact: target/x86_64-apple-darwin/release/sso-profiles
           - host: macos-latest
             target: aarch64-apple-darwin
+            artifact: target/aarch64-apple-darwin/release/sso-profiles
           - host: windows-latest
             target: x86_64-pc-windows-msvc
+            artifact: target/x86_64-pc-windows-msvc/release/sso-profiles.exe
     
     runs-on: ${{ matrix.settings.host }}
 
@@ -56,5 +60,5 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.settings.target }}
-        path: target/${{ matrix.settings.target }}/release/sso-profiles*
+        path: ${{ matrix.settings.artifact }}
         retention-days: 7
