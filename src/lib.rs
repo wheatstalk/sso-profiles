@@ -3,8 +3,6 @@ use configparser::ini::Ini;
 use futures::StreamExt;
 use indexmap::IndexMap;
 use std::{thread, time};
-use colorful::Color;
-use colorful::Colorful;
 
 #[derive(Debug)]
 pub struct SSOProfile {
@@ -93,7 +91,7 @@ impl SSOProfilesLister {
 
         match open::that(verification_uri) {
             _ => {
-                eprintln!("{}", "Open the following link if it doesn't open automatically, to allow access to view SSO:".color(Color::LightCyan));
+                bunt::eprintln!("{$cyan+bold}Open the following link if it doesn't open automatically, to allow access to view SSO:{/$}");
                 eprintln!("{}", verification_uri);
             }
         }
@@ -131,7 +129,7 @@ impl SSOProfilesLister {
 
     /// Query the SSO profiles with an access token.
     async fn list_sso_profiles(&self, sdk_config: &aws_config::SdkConfig, access_token: &str) -> Result<Vec<SSOProfile>, anyhow::Error> {
-        eprintln!("{}", "Finding accounts and roles".color(Color::LightCyan));
+        bunt::eprintln!("{$cyan+bold}Finding accounts and roles{/$}");
         let mut sso_profiles = Vec::<SSOProfile>::new();
 
         let sso_client = aws_sdk_sso::Client::new(sdk_config);
@@ -216,7 +214,7 @@ impl AwsConfigMerger {
                 ini_map.remove(&section_name);
             }
 
-            eprintln!("{} {}", "Profile".color(Color::Green), profile_name.color(Color::White));
+            bunt::eprintln!("{$green}Profile{/$} {[white+bold]}", profile_name);
     
             ini_map.insert(String::from(&section_name), sso_profile.into());
         }
