@@ -27,6 +27,7 @@ jobs:
       run: cargo test --verbose
 
   cross:
+    needs: [build]
     
     strategy:
       matrix:

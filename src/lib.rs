@@ -87,11 +87,11 @@ impl SSOProfilesLister {
 
         let device_code = device_authorization
             .device_code()
-            .ok_or_else(|| anyhow!("SSO Device Authroization provided no device code"))?;
+            .ok_or_else(|| anyhow!("SSO Device Authorization provided no device code"))?;
 
         match open::that(verification_uri) {
             _ => {
-                bunt::eprintln!("{$cyan+bold}Open the following link if it doesn't open automatically, to allow access to view SSO:{/$}");
+                bunt::eprintln!("{$cyan+bold}Open the following link, if it doesn't open automatically, to allow access to SSO:{/$}");
                 eprintln!("{}", verification_uri);
             }
         }
